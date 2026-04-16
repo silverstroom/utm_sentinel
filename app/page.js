@@ -1,121 +1,126 @@
 'use client';
 
-import { FloatingPathsBackground } from '@/components/ui/FloatingPaths';
+import { motion } from 'motion/react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { FloatingPathsBackground } from '@/components/ui/FloatingPaths';
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+  const title = 'UTM Tracker';
+  const words = title.split(' ');
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0a0e1a]">
-      {/* Floating paths animated background — two layers for depth */}
-      <div className="fixed inset-0 -z-10">
-        <FloatingPathsBackground position={1} className="absolute inset-0 h-full" />
-        <FloatingPathsBackground position={-1} className="absolute inset-0 h-full" />
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white">
+      {/* Floating paths — two layers crossing each other */}
+      <div className="absolute inset-0 text-slate-950">
+        <FloatingPathsBackground position={1} className="absolute inset-0 h-full text-slate-950" />
+        <FloatingPathsBackground position={-1} className="absolute inset-0 h-full text-slate-950" />
       </div>
 
-      {/* Gradient overlays for depth */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/40 via-transparent to-[#0a0e1a]/90" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full blur-[140px]"
-          style={{ background: 'radial-gradient(ellipse at center, rgba(76,110,245,0.12), transparent 60%)' }}
-        />
-      </div>
-
-      {/* Content layer */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-
-        {/* Header */}
-        <header className={`flex items-center justify-between px-5 sm:px-10 py-5 sm:py-7 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-            </div>
-            <span className="text-white font-bold text-base sm:text-lg tracking-tight">UTM Tracker Pro</span>
-          </div>
-        </header>
-
-        {/* Hero */}
-        <div className="flex-1 flex items-center justify-center px-5 sm:px-6 py-8">
-          <div className="text-center max-w-3xl w-full">
-
-            {/* Badge */}
-            <div className={`inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 rounded-full bg-white/[0.07] border border-white/[0.12] backdrop-blur-sm mb-6 sm:mb-8 transition-all duration-1000 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-400"></span>
-              </span>
-              <span className="text-xs sm:text-sm font-medium text-white/70 tracking-wide">Analytics in tempo reale</span>
-            </div>
-
-            {/* Title */}
-            <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] mb-5 sm:mb-7 transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              Traccia ogni click.
-              <br />
-              <span className="bg-gradient-to-r from-brand-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent">
-                Misura ogni risultato.
-              </span>
-            </h1>
-
-            {/* Subtitle */}
-            <p className={`text-base sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-12 font-normal transition-all duration-1000 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-              Crea link UTM professionali in pochi secondi, organizzali per cliente
-              e monitora le performance con analytics dettagliate.
-            </p>
-
-            {/* CTAs */}
-            <div className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-              <Link
-                href="/login"
-                className="group relative inline-flex items-center justify-center gap-3 px-7 sm:px-9 py-4 sm:py-[18px] bg-white text-[#0a0e1a] rounded-2xl font-bold text-sm sm:text-base transition-all shadow-2xl shadow-white/10 hover:shadow-white/20 hover:scale-[1.03] active:scale-[0.98]"
-              >
-                Accedi
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="transition-transform group-hover:translate-x-1">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </Link>
-
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-4 sm:py-[18px] border border-white/20 text-white rounded-2xl font-semibold text-sm sm:text-base hover:bg-white/[0.06] hover:border-white/30 transition-all"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/>
-                </svg>
-                Registrati
-              </Link>
-            </div>
-
-            {/* Feature cards */}
-            <div className={`grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mt-10 sm:mt-16 transition-all duration-1000 delay-[900ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              {[
-                { icon: '🔗', label: 'UTM Builder guidato', desc: 'Wizard step-by-step' },
-                { icon: '📊', label: 'Click Analytics', desc: 'Device, browser, referer' },
-                { icon: '👥', label: 'Multi-cliente', desc: 'Organizza per brand' },
-                { icon: '⚡', label: 'Link abbreviati', desc: 'Redirect con tracking' },
-              ].map((f) => (
-                <div
-                  key={f.label}
-                  className="flex flex-col items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-4 sm:py-5 rounded-2xl bg-white/[0.04] border border-white/[0.07] backdrop-blur-sm hover:bg-white/[0.07] transition-colors"
-                >
-                  <span className="text-xl sm:text-2xl mb-0 sm:mb-1">{f.icon}</span>
-                  <span className="text-xs sm:text-sm font-semibold text-white/80 text-center">{f.label}</span>
-                  <span className="text-xs text-white/40">{f.desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Top bar with small logo */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="absolute top-6 left-6 sm:top-8 sm:left-10 z-20 flex items-center gap-2.5"
+      >
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-md shadow-brand-200/50">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
         </div>
+        <span className="font-bold text-surface-800 tracking-tight">UTM Tracker Pro</span>
+      </motion.div>
+
+      {/* Hero content */}
+      <div className="relative z-10 container mx-auto px-4 md:px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2 }}
+          className="max-w-4xl mx-auto"
+        >
+          {/* Animated title — letter by letter with spring */}
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-4 tracking-tighter">
+            {words.map((word, wordIndex) => (
+              <span key={wordIndex} className="inline-block mr-3 sm:mr-4 last:mr-0">
+                {word.split('').map((letter, letterIndex) => (
+                  <motion.span
+                    key={`${wordIndex}-${letterIndex}`}
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      delay: wordIndex * 0.1 + letterIndex * 0.03,
+                      type: 'spring',
+                      stiffness: 150,
+                      damping: 25,
+                    }}
+                    className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-700/80"
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+              </span>
+            ))}
+          </h1>
+
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="text-base sm:text-lg md:text-xl text-neutral-500 max-w-2xl mx-auto mb-10 leading-relaxed px-2"
+          >
+            Crea link UTM professionali, organizza per cliente
+            e monitora ogni click con analytics dettagliate.
+          </motion.p>
+
+          {/* CTA — glassmorphism button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            className="flex flex-col items-center gap-5"
+          >
+            <Link
+              href="/login"
+              className="inline-block group relative bg-gradient-to-b from-black/10 to-white/10 p-px rounded-2xl backdrop-blur-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+            >
+              <span className="inline-flex items-center rounded-[1.15rem] px-7 sm:px-8 py-4 sm:py-5 text-base sm:text-lg font-semibold backdrop-blur-md bg-white/95 hover:bg-white text-black transition-all duration-300 group-hover:-translate-y-0.5 border border-black/10 hover:shadow-md">
+                <span className="opacity-90 group-hover:opacity-100 transition-opacity">
+                  Accedi alla Dashboard
+                </span>
+                <span className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5 transition-all duration-300">
+                  →
+                </span>
+              </span>
+            </Link>
+
+            <p className="text-sm text-neutral-500">
+              Nuovo qui?{' '}
+              <Link href="/register" className="font-semibold text-neutral-900 hover:underline underline-offset-4">
+                Registrati come agente
+              </Link>
+            </p>
+          </motion.div>
+        </motion.div>
       </div>
+
+      {/* Bottom badge */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20"
+      >
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 border border-neutral-200 backdrop-blur-sm shadow-sm">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="text-xs font-medium text-neutral-600">Analytics in tempo reale</span>
+        </div>
+      </motion.div>
     </div>
   );
 }

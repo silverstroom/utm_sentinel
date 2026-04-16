@@ -18,10 +18,10 @@ export function FloatingPathsBackground({ position = 1, children, className }) {
   }));
 
   return (
-    <div className={cn('w-full relative', className)}>
+    <div className={cn('w-full relative text-white', className)}>
       <div className="absolute inset-0 pointer-events-none">
         <svg
-          className="w-full h-full text-white"
+          className="w-full h-full"
           viewBox="0 0 696 316"
           fill="none"
           preserveAspectRatio="xMidYMid slice"
