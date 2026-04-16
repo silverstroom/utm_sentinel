@@ -1,5 +1,5 @@
 -- Copia e incolla questo SQL nell'editor di Turso
--- (Dashboard Turso → Database → Edit Data o Query)
+-- (Dashboard Turso → Database → SQL console)
 
 CREATE TABLE IF NOT EXISTS clients (
   id TEXT PRIMARY KEY,
@@ -39,7 +39,23 @@ CREATE TABLE IF NOT EXISTS clicks (
   FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE
 );
 
+-- Nuova tabella per gli utenti (agenti e admin)
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE,
+  password_hash TEXT NOT NULL,
+  name TEXT DEFAULT '',
+  surname TEXT DEFAULT '',
+  area TEXT DEFAULT '',
+  role TEXT DEFAULT 'agent',
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_clicks_link_id ON clicks(link_id);
 CREATE INDEX IF NOT EXISTS idx_clicks_date ON clicks(clicked_at);
 CREATE INDEX IF NOT EXISTS idx_links_client ON links(client_id);
 CREATE INDEX IF NOT EXISTS idx_links_code ON links(short_code);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);

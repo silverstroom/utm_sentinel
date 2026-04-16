@@ -38,6 +38,18 @@ const CHANNELS = [
     Icon: GoogleBusinessIcon, color: '#34A853', bgLight: '#34A85312',
     utm_source: 'google', allowPaidChoice: false,
     organicMedium: 'local', paidMedium: 'local', forceOrganic: true,
+    hasSubOptions: true,
+    subOptions: [
+      { id: 'gbp_website', label: 'Sito Web nella scheda', desc: 'Pulsante "Sito web" sulla GBP', utm_content: 'gbp-website-button', icon: '🌐' },
+      { id: 'gbp_whatsapp', label: 'WhatsApp nella scheda', desc: 'Pulsante WhatsApp sulla GBP', utm_content: 'gbp-whatsapp', icon: '💬' },
+      { id: 'gbp_directions', label: 'Indicazioni stradali', desc: 'Pulsante "Indicazioni" Maps', utm_content: 'gbp-directions', icon: '🗺️' },
+      { id: 'gbp_call', label: 'Pulsante Chiama', desc: 'Pulsante "Chiama" nella scheda', utm_content: 'gbp-call-button', icon: '📞' },
+      { id: 'gbp_post', label: 'Post / Aggiornamento', desc: 'Link inserito nei post GBP', utm_content: 'gbp-post', icon: '📝' },
+      { id: 'gbp_offer', label: 'Offerta / Promozione', desc: 'Link nelle offerte GBP', utm_content: 'gbp-offer', icon: '🏷️' },
+      { id: 'gbp_product', label: 'Prodotto / Servizio', desc: 'Link nei prodotti GBP', utm_content: 'gbp-product', icon: '📦' },
+      { id: 'gbp_booking', label: 'Prenotazione', desc: 'Pulsante "Prenota" sulla scheda', utm_content: 'gbp-booking', icon: '📅' },
+      { id: 'gbp_menu', label: 'Menu', desc: 'Link al menu (ristoranti)', utm_content: 'gbp-menu', icon: '🍽️' },
+    ],
   },
   {
     id: 'linkedin', name: 'LinkedIn', desc: 'Post, articoli, pagina aziendale',
@@ -93,6 +105,7 @@ export default function CreateLinkPage() {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [gbpSubOption, setGbpSubOption] = useState(null);
   const [isPaid, setIsPaid] = useState(false);
   const [url, setUrl] = useState('');
   const [label, setLabel] = useState('');
@@ -121,11 +134,17 @@ export default function CreateLinkPage() {
     ? (isPaid ? selectedChannel.paidMedium : selectedChannel.organicMedium)
     : '';
 
+  // Step 4 shows: 'gbp' for GBP sub-options, 'paid' for organic/paid choice, 'skip' for neither
+  const step4Type = selectedChannel?.hasSubOptions ? 'gbp' : selectedChannel?.allowPaidChoice ? 'paid' : 'skip';
+
   function canProceed() {
     if (step === 1) return selectedClient !== null;
     if (step === 2) { try { new URL(url); return true; } catch { return false; } }
     if (step === 3) return selectedChannel !== null;
-    if (step === 4) return true; // organic/paid always has a selection
+    if (step === 4) {
+      if (step4Type === 'gbp') return gbpSubOption !== null;
+      return true;
+    }
     return true;
   }
 
@@ -133,18 +152,18 @@ export default function CreateLinkPage() {
     const client = clients.find(c => c.id === selectedClient);
     const clientSlug = (client?.name || 'client').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20);
     const channelSlug = selectedChannel?.id || 'link';
+    const sub = gbpSubOption ? `-${gbpSubOption.id.replace('gbp_', '')}` : '';
     const type = isPaid ? 'paid' : 'org';
     const date = new Date().toISOString().slice(0, 7);
-    return `${clientSlug}_${channelSlug}_${type}_${date}`;
+    return `${clientSlug}_${channelSlug}${sub}_${type}_${date}`;
   }
 
   function goToStep(n) {
     setError('');
-    // Skip organic/paid step if channel doesn't allow it
-    if (n === 4 && selectedChannel && !selectedChannel.allowPaidChoice) {
-      if (selectedChannel.forcePaid) setIsPaid(true);
+    // Skip step 4 if channel doesn't need it
+    if (n === 4 && step4Type === 'skip') {
+      if (selectedChannel?.forcePaid) setIsPaid(true);
       else setIsPaid(false);
-      // Skip to step 5
       n = 5;
     }
     if (n === 5 && !campaignName) {
@@ -154,8 +173,8 @@ export default function CreateLinkPage() {
   }
 
   function goBack() {
-    if (step === 5 && selectedChannel && !selectedChannel.allowPaidChoice) {
-      setStep(3); // skip back over hidden step 4
+    if (step === 5 && step4Type === 'skip') {
+      setStep(3);
     } else {
       setStep(step - 1);
     }
@@ -182,6 +201,11 @@ export default function CreateLinkPage() {
     setError('');
     setLoading(true);
     try {
+      // If GBP sub-option is selected, it provides utm_content; user's utmContent input extends it
+      const finalUtmContent = gbpSubOption
+        ? (utmContent ? `${gbpSubOption.utm_content}_${utmContent}` : gbpSubOption.utm_content)
+        : utmContent;
+
       const res = await fetch('/api/links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -191,8 +215,8 @@ export default function CreateLinkPage() {
           utm_source: selectedChannel.utm_source,
           utm_medium: currentMedium,
           utm_campaign: campaignName || generateCampaignSlug(),
-          utm_content: utmContent,
-          label: label || `${selectedChannel.name} — ${campaignName || ''}`.trim(),
+          utm_content: finalUtmContent,
+          label: label || `${selectedChannel.name}${gbpSubOption ? ' — ' + gbpSubOption.label : ''}${campaignName ? ' — ' + campaignName : ''}`.trim(),
         }),
       });
       if (!res.ok) {
@@ -215,7 +239,7 @@ export default function CreateLinkPage() {
   }
 
   function resetAll() {
-    setStep(1); setSelectedClient(null); setSelectedChannel(null); setIsPaid(false);
+    setStep(1); setSelectedClient(null); setSelectedChannel(null); setGbpSubOption(null); setIsPaid(false);
     setUrl(''); setLabel(''); setCampaignName(''); setUtmContent('');
     setCreatedLink(null); setError('');
   }
@@ -312,12 +336,13 @@ export default function CreateLinkPage() {
   // WIZARD
   // ═══════════════════════════════════════════════════════
   // Calculate visible step for progress bar (skip step 4 if not applicable)
-  const showPaidStep = selectedChannel?.allowPaidChoice !== false;
+  const showStep4 = step4Type !== 'skip';
+  const step4Label = step4Type === 'gbp' ? 'Posizione' : 'Tipo';
   const visibleSteps = [
     { n: 1, label: 'Cliente' },
     { n: 2, label: 'Link' },
     { n: 3, label: 'Canale' },
-    ...(showPaidStep ? [{ n: 4, label: 'Tipo' }] : []),
+    ...(showStep4 ? [{ n: 4, label: step4Label }] : []),
     { n: 5, label: 'Conferma' },
   ];
 
@@ -346,7 +371,7 @@ export default function CreateLinkPage() {
             <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
               step === s.n ? 'bg-white/20' : step > s.n ? 'bg-emerald-200 text-emerald-700' : 'bg-surface-200'
             }`}>
-              {step > s.n ? '✓' : s.n > 4 ? (showPaidStep ? 5 : 4) : s.n}
+              {step > s.n ? '✓' : s.n > 4 ? (showStep4 ? 5 : 4) : s.n}
             </span>
             <span className="hidden sm:inline">{s.label}</span>
           </button>
@@ -460,7 +485,7 @@ export default function CreateLinkPage() {
                 const Icon = ch.Icon;
                 const isSelected = selectedChannel?.id === ch.id;
                 return (
-                  <button key={ch.id} onClick={() => setSelectedChannel(ch)}
+                  <button key={ch.id} onClick={() => { setSelectedChannel(ch); setGbpSubOption(null); }}
                     className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
                       isSelected
                         ? 'border-brand-500 bg-brand-50 shadow-sm'
@@ -481,10 +506,53 @@ export default function CreateLinkPage() {
         </div>
       )}
 
-      {/* ─── STEP 4: Organico / Pagamento ────────────── */}
-      {step === 4 && (
+      {/* ─── STEP 4a: GBP Placement ─────────────────── */}
+      {step === 4 && step4Type === 'gbp' && (
         <div className="animate-fade-in">
-          <div className="bg-white rounded-2xl border border-surface-200 p-6">
+          <div className="bg-white rounded-2xl border border-surface-200 p-4 sm:p-6">
+            <div className="flex items-center gap-3 mb-2">
+              {selectedChannel?.Icon && <selectedChannel.Icon size={24} />}
+              <h3 className="font-bold text-surface-900 text-lg">
+                Dove metterai il link nella Google Business?
+              </h3>
+            </div>
+            <p className="text-sm text-surface-500 mb-6">Seleziona il posizionamento per tracciare quale elemento genera click</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {selectedChannel?.subOptions?.map(opt => {
+                const isSelected = gbpSubOption?.id === opt.id;
+                return (
+                  <button key={opt.id} onClick={() => setGbpSubOption(opt)}
+                    className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${
+                      isSelected
+                        ? 'border-brand-500 bg-brand-50 shadow-sm'
+                        : 'border-surface-200 hover:border-surface-300 hover:bg-surface-50'
+                    }`}>
+                    <span className="text-2xl flex-shrink-0">{opt.icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-semibold text-sm ${isSelected ? 'text-brand-700' : 'text-surface-800'}`}>{opt.label}</p>
+                      <p className="text-xs text-surface-400 mt-0.5">{opt.desc}</p>
+                      {isSelected && (
+                        <code className="inline-block mt-2 text-[10px] font-mono bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded">
+                          content: {opt.utm_content}
+                        </code>
+                      )}
+                    </div>
+                    {isSelected && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4c6ef5" strokeWidth="2.5" className="flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── STEP 4b: Organico / Pagamento ────────────── */}
+      {step === 4 && step4Type === 'paid' && (
+        <div className="animate-fade-in">
+          <div className="bg-white rounded-2xl border border-surface-200 p-4 sm:p-6">
             <div className="flex items-center gap-3 mb-2">
               {selectedChannel?.Icon && <selectedChannel.Icon size={24} />}
               <h3 className="font-bold text-surface-900 text-lg">
@@ -586,11 +654,20 @@ export default function CreateLinkPage() {
                     <span className="font-medium text-surface-800">{selectedChannel?.name}</span>
                   </span>
                 </SummaryRow>
-                <SummaryRow label="Tipo">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-bold ${isPaid ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                    {isPaid ? '💰 A pagamento' : '🌱 Organico'}
-                  </span>
-                </SummaryRow>
+                {gbpSubOption && (
+                  <SummaryRow label="Posizione">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-bold bg-green-100 text-green-700">
+                      {gbpSubOption.icon} {gbpSubOption.label}
+                    </span>
+                  </SummaryRow>
+                )}
+                {!gbpSubOption && (
+                  <SummaryRow label="Tipo">
+                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-bold ${isPaid ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                      {isPaid ? '💰 A pagamento' : '🌱 Organico'}
+                    </span>
+                  </SummaryRow>
+                )}
                 <SummaryRow label="Destinazione" value={url} mono />
                 <div className="border-t border-surface-200 pt-3 mt-3">
                   <p className="text-[10px] font-bold text-surface-400 uppercase tracking-wider mb-2">Parametri UTM</p>

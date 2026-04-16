@@ -1,6 +1,6 @@
 'use client';
 
-import { DottedSurface } from '@/components/ui/DottedSurface';
+import { FloatingPathsBackground } from '@/components/ui/FloatingPaths';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -14,14 +14,17 @@ export default function LandingPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0a0e1a]">
-      {/* Three.js Dotted Surface */}
-      <DottedSurface />
+      {/* Floating paths animated background — two layers for depth */}
+      <div className="fixed inset-0 -z-10">
+        <FloatingPathsBackground position={1} className="absolute inset-0 h-full" />
+        <FloatingPathsBackground position={-1} className="absolute inset-0 h-full" />
+      </div>
 
       {/* Gradient overlays for depth */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/30 via-transparent to-[#0a0e1a]/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/40 via-transparent to-[#0a0e1a]/90" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full blur-[140px]"
-          style={{ background: 'radial-gradient(ellipse at center, rgba(76,110,245,0.08), transparent 60%)' }}
+          style={{ background: 'radial-gradient(ellipse at center, rgba(76,110,245,0.12), transparent 60%)' }}
         />
       </div>
 
@@ -72,23 +75,23 @@ export default function LandingPage() {
             {/* CTAs */}
             <div className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
               <Link
-                href="/dashboard"
+                href="/login"
                 className="group relative inline-flex items-center justify-center gap-3 px-7 sm:px-9 py-4 sm:py-[18px] bg-white text-[#0a0e1a] rounded-2xl font-bold text-sm sm:text-base transition-all shadow-2xl shadow-white/10 hover:shadow-white/20 hover:scale-[1.03] active:scale-[0.98]"
               >
-                Accedi alla Dashboard
+                Accedi
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="transition-transform group-hover:translate-x-1">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </Link>
 
               <Link
-                href="/create"
+                href="/register"
                 className="inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-4 sm:py-[18px] border border-white/20 text-white rounded-2xl font-semibold text-sm sm:text-base hover:bg-white/[0.06] hover:border-white/30 transition-all"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M12 5v14M5 12h14"/>
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/>
                 </svg>
-                Crea un Link
+                Registrati
               </Link>
             </div>
 
