@@ -68,27 +68,27 @@ export default function AnalyticsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <Link href="/clients" className="p-2 hover:bg-surface-100 rounded-lg transition-colors text-surface-400">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <Link href="/clients" className="p-2 hover:bg-surface-100 rounded-lg transition-colors text-surface-400 flex-shrink-0">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </Link>
           <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg"
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg flex-shrink-0"
             style={{ background: client.color }}
           >
             {client.name.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h1 className="font-display text-3xl text-surface-900 font-bold">{client.name}</h1>
-            <p className="text-surface-500 text-sm">Analytics e performance dei link</p>
+          <div className="min-w-0">
+            <h1 className="font-display text-2xl sm:text-3xl text-surface-900 font-bold truncate">{client.name}</h1>
+            <p className="text-surface-500 text-xs sm:text-sm">Analytics e performance dei link</p>
           </div>
         </div>
 
         <select
           value={selectedLink}
           onChange={e => setSelectedLink(e.target.value)}
-          className="px-4 py-2.5 border border-surface-200 rounded-xl text-sm bg-white min-w-[200px]"
+          className="w-full sm:w-auto px-4 py-3 border border-surface-200 rounded-xl text-sm bg-white sm:min-w-[200px]"
         >
           <option value="">Panoramica cliente</option>
           {links.map(l => (
@@ -106,7 +106,7 @@ export default function AnalyticsPage() {
       ) : (
         <div className="space-y-6 animate-fade-in">
           {/* Summary */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCard
               label="Click Totali"
               value={stats.type === 'client' ? stats.totalClicks : stats.total}
@@ -143,7 +143,7 @@ export default function AnalyticsPage() {
 
           {stats.type === 'link' ? (
             /* Link-specific analytics */
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <BreakdownCard title="Dispositivi" data={stats.byDevice} />
               <BreakdownCard title="Browser" data={stats.byBrowser} />
               <BreakdownCard title="Paesi" data={stats.byCountry} />

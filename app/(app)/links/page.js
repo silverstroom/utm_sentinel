@@ -27,9 +27,9 @@ export default function LinksPage() {
     setLoading(false);
   }
 
-  function copyLink(code, id) {
-    navigator.clipboard.writeText(`${window.location.origin}/r/${code}`);
-    setCopiedId(id);
+  function copyLink(link) {
+    navigator.clipboard.writeText(`${window.location.origin}/r/${link.short_code}`);
+    setCopiedId(link.id);
     setTimeout(() => setCopiedId(null), 1500);
   }
 
@@ -50,26 +50,27 @@ export default function LinksPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div>
-          <h1 className="font-display text-4xl text-surface-900 font-bold">Tutti i Link</h1>
-          <p className="text-surface-500 mt-1">{links.length} link totali</p>
+          <h1 className="font-display text-3xl sm:text-4xl text-surface-900 font-bold">Tutti i Link</h1>
+          <p className="text-surface-500 mt-1 text-sm sm:text-base">{links.length} link totali</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <select
             value={filterClient}
             onChange={e => setFilterClient(e.target.value)}
-            className="px-4 py-2.5 border border-surface-200 rounded-xl text-sm bg-white"
+            className="flex-1 sm:flex-initial px-4 py-3 border border-surface-200 rounded-xl text-sm bg-white"
           >
             <option value="">Tutti i clienti</option>
             {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <Link
             href="/create"
-            className="px-5 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2"
+            className="px-4 sm:px-5 py-3 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2 whitespace-nowrap"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            Nuovo Link
+            <span className="hidden sm:inline">Nuovo Link</span>
+            <span className="sm:hidden">Nuovo</span>
           </Link>
         </div>
       </div>
@@ -91,8 +92,10 @@ export default function LinksPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-surface-200 overflow-hidden animate-fade-in">
-          <table className="w-full">
+        <>
+          {/* Desktop: Table view */}
+          <div className="hidden lg:block bg-white rounded-2xl border border-surface-200 overflow-hidden animate-fade-in">
+            <table className="w-full">
             <thead>
               <tr className="border-b border-surface-100">
                 <th className="text-left px-6 py-4 text-xs font-semibold text-surface-400 uppercase tracking-wider">Link / Campagna</th>
@@ -150,7 +153,7 @@ export default function LinksPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-1">
                       <button
-                        onClick={() => copyLink(link.short_code, link.id)}
+                        onClick={() => copyLink(link)}
                         className={`p-2 rounded-lg transition-colors text-sm ${
                           copiedId === link.id
                             ? 'bg-emerald-50 text-emerald-600'
@@ -190,7 +193,90 @@ export default function LinksPage() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+
+          {/* Mobile: Card view */}
+          <div className="lg:hidden space-y-3 animate-fade-in">
+            {links.map((link) => (
+              <div key={link.id} className="bg-white rounded-2xl border border-surface-200 p-4">
+                {/* Header with client + status */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: link.client_color }}>
+                      {link.client_name?.charAt(0)}
+                    </div>
+                    <span className="text-xs font-semibold text-surface-600 truncate">{link.client_name}</span>
+                  </div>
+                  <button
+                    onClick={() => toggleActive(link)}
+                    className={`badge cursor-pointer ${link.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-surface-100 text-surface-400'}`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${link.is_active ? 'bg-emerald-500' : 'bg-surface-300'}`}
+                      style={link.is_active ? { animation: 'pulse-dot 2s infinite' } : {}} />
+                    {link.is_active ? 'Attivo' : 'Inattivo'}
+                  </button>
+                </div>
+
+                {/* Label/Campaign */}
+                <p className="font-semibold text-surface-800 mb-1 truncate">
+                  {link.label || link.utm_campaign || 'Senza etichetta'}
+                </p>
+                <p className="text-xs text-surface-400 font-mono truncate mb-3">
+                  {link.destination_url}
+                </p>
+
+                {/* UTM badges */}
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {link.utm_source && <span className="badge bg-blue-50 text-blue-600">{link.utm_source}</span>}
+                  {link.utm_medium && <span className="badge bg-violet-50 text-violet-600">{link.utm_medium}</span>}
+                </div>
+
+                {/* Footer: clicks + actions */}
+                <div className="flex items-center justify-between pt-3 border-t border-surface-100">
+                  <div>
+                    <p className="text-2xl font-bold text-surface-900 leading-none">{link.click_count.toLocaleString('it-IT')}</p>
+                    <p className="text-[11px] text-surface-400 font-medium mt-0.5">click</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => copyLink(link)}
+                      className={`p-2.5 rounded-lg transition-colors ${
+                        copiedId === link.id ? 'bg-emerald-50 text-emerald-600' : 'bg-surface-50 text-surface-500 hover:text-surface-700'
+                      }`}
+                      title="Copia link"
+                    >
+                      {copiedId === link.id ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      )}
+                    </button>
+                    <Link
+                      href={`/analytics/${link.client_id}?link=${link.id}`}
+                      className="p-2.5 bg-surface-50 rounded-lg text-surface-500 hover:text-brand-600 transition-colors"
+                      title="Analytics"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6"/>
+                      </svg>
+                    </Link>
+                    <button
+                      onClick={() => deleteLink(link.id)}
+                      className="p-2.5 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 transition-colors"
+                      title="Elimina"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

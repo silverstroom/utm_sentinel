@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   WhatsAppIcon, InstagramIcon, FacebookIcon, GoogleIcon,
   GoogleBusinessIcon, LinkedInIcon, TikTokIcon, YouTubeIcon,
-  EmailIcon, SmsIcon, QrCodeIcon, MetaAdsIcon,
+  EmailIcon, SmsIcon, QrCodeIcon, MetaAdsIcon, WebsiteIcon,
 } from '@/components/ui/BrandIcons';
 
 // ─── Channel Presets ───────────────────────────────────
@@ -74,6 +74,12 @@ const CHANNELS = [
     Icon: QrCodeIcon, color: '#6B7280', bgLight: '#6B728012',
     utm_source: 'qrcode', allowPaidChoice: false,
     organicMedium: 'offline', paidMedium: 'offline', forceOrganic: true,
+  },
+  {
+    id: 'website', name: 'Sito Internet', desc: 'Blog, pagine, firma email, referral',
+    Icon: WebsiteIcon, color: '#0EA5E9', bgLight: '#0EA5E912',
+    utm_source: 'website', allowPaidChoice: false,
+    organicMedium: 'referral', paidMedium: 'referral', forceOrganic: true,
   },
 ];
 
@@ -249,20 +255,27 @@ export default function CreateLinkPage() {
           </div>
 
           <div className="space-y-5">
+            {/* PRIMARY: Short tracking link */}
             <div>
-              <label className="text-xs font-bold text-surface-500 uppercase tracking-wider mb-2 block">Link da condividere</label>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 bg-surface-50 rounded-xl px-4 py-3.5 font-mono text-sm text-brand-700 border border-surface-200 truncate">{trackingUrl}</div>
+              <label className="text-xs font-bold text-surface-500 uppercase tracking-wider mb-2 block">
+                🔗 Link da condividere
+              </label>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="flex-1 bg-surface-50 rounded-xl px-4 py-3.5 font-mono text-sm text-brand-700 border border-surface-200 truncate">
+                  {trackingUrl}
+                </div>
                 <button onClick={() => copyToClipboard(trackingUrl)}
                   className="px-6 py-3.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors whitespace-nowrap">
                   {copied ? '✓ Copiato!' : 'Copia Link'}
                 </button>
               </div>
+              <p className="text-xs text-surface-400 mt-2">Ogni click verrà tracciato nella tua dashboard con device, browser, referer</p>
             </div>
 
+            {/* UTM Parameters */}
             <div className="bg-surface-50 rounded-xl p-4 border border-surface-200">
               <p className="text-xs font-bold text-surface-500 uppercase tracking-wider mb-3">Parametri UTM</p>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                 {[
                   ['Source', selectedChannel.utm_source],
                   ['Medium', currentMedium],
@@ -271,20 +284,23 @@ export default function CreateLinkPage() {
                 ].filter(Boolean).map(([k, v]) => (
                   <div key={k} className="flex items-center gap-2">
                     <span className="text-xs font-mono text-surface-400">{k}:</span>
-                    <span className="text-xs font-mono font-bold text-surface-700">{v}</span>
+                    <span className="text-xs font-mono font-bold text-surface-700 break-all">{v}</span>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Full URL preview */}
             <div>
-              <label className="text-xs font-bold text-surface-500 uppercase tracking-wider mb-2 block">URL completo</label>
-              <div className="bg-surface-50 rounded-xl px-4 py-3 font-mono text-[11px] text-surface-500 border border-surface-200 break-all leading-relaxed">{fullUrl}</div>
+              <label className="text-xs font-bold text-surface-500 uppercase tracking-wider mb-2 block">URL di destinazione completo</label>
+              <div className="bg-surface-50 rounded-xl px-4 py-3 font-mono text-[11px] text-surface-500 border border-surface-200 break-all leading-relaxed">
+                {fullUrl}
+              </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button onClick={resetAll} className="flex-1 py-3.5 bg-surface-800 text-white rounded-xl text-sm font-bold hover:bg-surface-900 transition-colors">Crea un altro link</button>
-              <a href="/links" className="px-6 py-3.5 border border-surface-200 rounded-xl text-sm font-semibold text-surface-600 hover:bg-surface-50 transition-colors">Vedi tutti</a>
+              <a href="/links" className="px-6 py-3.5 border border-surface-200 rounded-xl text-sm font-semibold text-surface-600 hover:bg-surface-50 transition-colors text-center">Vedi tutti</a>
             </div>
           </div>
         </div>
@@ -308,18 +324,18 @@ export default function CreateLinkPage() {
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
-      <div className="mb-8 animate-fade-in">
-        <h1 className="font-display text-4xl text-surface-900 font-bold">Crea Link UTM</h1>
-        <p className="text-surface-500 mt-1 text-base">Segui i passaggi per generare il tuo link tracciato</p>
+      <div className="mb-6 sm:mb-8 animate-fade-in">
+        <h1 className="font-display text-3xl sm:text-4xl text-surface-900 font-bold">Crea Link UTM</h1>
+        <p className="text-surface-500 mt-1 text-sm sm:text-base">Segui i passaggi per generare il tuo link tracciato</p>
       </div>
 
       {/* Progress */}
-      <div className="flex items-center gap-2 mb-8 animate-fade-in">
+      <div className="flex items-center gap-1.5 sm:gap-2 mb-6 sm:mb-8 animate-fade-in">
         {visibleSteps.map((s) => (
           <button
             key={s.n}
             onClick={() => { if (s.n < step) goToStep(s.n); }}
-            className={`flex items-center gap-2 flex-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center justify-center sm:justify-start gap-2 flex-1 px-2 sm:px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               step === s.n
                 ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
                 : step > s.n
@@ -349,7 +365,7 @@ export default function CreateLinkPage() {
             <p className="text-sm text-surface-500 mb-5">Seleziona un cliente esistente o creane uno nuovo</p>
 
             {clients.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 {clients.map(client => (
                   <button key={client.id} onClick={() => setSelectedClient(client.id)}
                     className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
@@ -378,7 +394,7 @@ export default function CreateLinkPage() {
               </button>
             ) : (
               <div className="p-4 bg-surface-50 rounded-xl border border-surface-200 animate-fade-in">
-                <form onSubmit={handleCreateClient} className="flex items-end gap-3">
+                <form onSubmit={handleCreateClient} className="flex flex-col sm:flex-row sm:items-end gap-3">
                   <div className="flex-1">
                     <label className="text-xs font-bold text-surface-600 mb-1.5 block">Nome Cliente</label>
                     <input type="text" value={newClientName} onChange={e => setNewClientName(e.target.value)}
@@ -389,13 +405,15 @@ export default function CreateLinkPage() {
                     <div className="flex gap-1">
                       {CLIENT_COLORS.slice(0, 6).map(c => (
                         <button key={c} type="button" onClick={() => setNewClientColor(c)}
-                          className={`w-7 h-7 rounded-lg transition-transform ${newClientColor === c ? 'scale-110 ring-2 ring-offset-1 ring-brand-400' : ''}`}
+                          className={`w-8 h-8 sm:w-7 sm:h-7 rounded-lg transition-transform ${newClientColor === c ? 'scale-110 ring-2 ring-offset-1 ring-brand-400' : ''}`}
                           style={{ background: c }} />
                       ))}
                     </div>
                   </div>
-                  <button type="submit" className="px-5 py-2.5 bg-brand-600 text-white rounded-lg text-sm font-bold hover:bg-brand-700">Aggiungi</button>
-                  <button type="button" onClick={() => setShowNewClient(false)} className="px-3 py-2.5 text-surface-400 hover:text-surface-600 text-sm">✕</button>
+                  <div className="flex gap-2">
+                    <button type="submit" className="flex-1 sm:flex-initial px-5 py-2.5 bg-brand-600 text-white rounded-lg text-sm font-bold hover:bg-brand-700">Aggiungi</button>
+                    <button type="button" onClick={() => setShowNewClient(false)} className="px-3 py-2.5 text-surface-400 hover:text-surface-600 text-sm">✕</button>
+                  </div>
                 </form>
               </div>
             )}
@@ -437,7 +455,7 @@ export default function CreateLinkPage() {
             <h3 className="font-bold text-surface-900 text-lg mb-1">Dove condividerai questo link?</h3>
             <p className="text-sm text-surface-500 mb-5">Seleziona il canale — i parametri UTM verranno configurati automaticamente</p>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {CHANNELS.map(ch => {
                 const Icon = ch.Icon;
                 const isSelected = selectedChannel?.id === ch.id;
@@ -475,7 +493,7 @@ export default function CreateLinkPage() {
             </div>
             <p className="text-sm text-surface-500 mb-6">Questo determina il parametro <code className="text-xs font-mono bg-surface-100 px-1.5 py-0.5 rounded text-surface-700">utm_medium</code></p>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Organico */}
               <button
                 onClick={() => setIsPaid(false)}

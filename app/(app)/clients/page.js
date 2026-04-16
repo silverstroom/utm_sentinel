@@ -68,14 +68,14 @@ export default function ClientsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div>
-          <h1 className="font-display text-4xl text-surface-900 font-bold">Clienti</h1>
-          <p className="text-surface-500 mt-1">Gestisci i tuoi clienti e monitora le performance</p>
+          <h1 className="font-display text-3xl sm:text-4xl text-surface-900 font-bold">Clienti</h1>
+          <p className="text-surface-500 mt-1 text-sm sm:text-base">Gestisci i tuoi clienti e monitora le performance</p>
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setEditingId(null); setName(''); setColor(COLORS[0]); }}
-          className="px-5 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2"
+          className="px-5 py-3 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 sm:w-auto"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
           Nuovo Cliente
@@ -83,9 +83,9 @@ export default function ClientsPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-2xl border border-surface-200 p-6 mb-6 animate-fade-in">
+        <div className="bg-white rounded-2xl border border-surface-200 p-4 sm:p-6 mb-6 animate-fade-in">
           <h3 className="font-semibold text-surface-800 mb-4">{editingId ? 'Modifica Cliente' : 'Nuovo Cliente'}</h3>
-          <form onSubmit={handleSubmit} className="flex items-end gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
             <div className="flex-1">
               <label className="text-xs font-semibold text-surface-500 mb-1.5 block">Nome</label>
               <input
@@ -99,24 +99,26 @@ export default function ClientsPage() {
             </div>
             <div>
               <label className="text-xs font-semibold text-surface-500 mb-1.5 block">Colore</label>
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {COLORS.map(c => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-lg transition-all ${color === c ? 'scale-110 ring-2 ring-offset-2 ring-brand-400' : 'hover:scale-105'}`}
+                    className={`w-9 h-9 sm:w-8 sm:h-8 rounded-lg transition-all ${color === c ? 'scale-110 ring-2 ring-offset-2 ring-brand-400' : 'hover:scale-105'}`}
                     style={{ background: c }}
                   />
                 ))}
               </div>
             </div>
-            <button type="submit" className="px-6 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
-              {editingId ? 'Salva' : 'Aggiungi'}
-            </button>
-            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-4 py-2.5 border border-surface-200 rounded-xl text-sm text-surface-500 hover:bg-surface-50">
-              Annulla
-            </button>
+            <div className="flex gap-2">
+              <button type="submit" className="flex-1 sm:flex-initial px-6 py-3 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
+                {editingId ? 'Salva' : 'Aggiungi'}
+              </button>
+              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-4 py-3 border border-surface-200 rounded-xl text-sm text-surface-500 hover:bg-surface-50">
+                Annulla
+              </button>
+            </div>
           </form>
         </div>
       )}
@@ -141,7 +143,7 @@ export default function ClientsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {clients.map((client, i) => (
             <div
               key={client.id}

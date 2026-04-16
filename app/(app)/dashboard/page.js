@@ -9,30 +9,30 @@ export default async function Dashboard() {
   return (
     <div>
       <div className="mb-8 animate-fade-in">
-        <h1 className="font-display text-4xl text-surface-900 font-bold">Dashboard</h1>
-        <p className="text-surface-500 mt-1">Panoramica delle performance dei tuoi link UTM</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-surface-900 font-bold">Dashboard</h1>
+        <p className="text-surface-500 mt-1 text-sm sm:text-base">Panoramica delle performance dei tuoi link UTM</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
         {[
           { label: 'Clienti Totali', value: stats.total_clients, icon: '👥', color: 'from-blue-500 to-blue-600' },
           { label: 'Link Attivi', value: stats.total_links, icon: '🔗', color: 'from-violet-500 to-violet-600' },
           { label: 'Click Totali', value: stats.total_clicks.toLocaleString('it-IT'), icon: '📊', color: 'from-emerald-500 to-emerald-600' },
           { label: 'Click Oggi', value: stats.clicks_today.toLocaleString('it-IT'), icon: '⚡', color: 'from-amber-500 to-amber-600' },
         ].map((stat, i) => (
-          <div key={stat.label} className={`card-hover bg-white rounded-2xl p-6 border border-surface-200 stat-pattern animate-fade-in stagger-${i + 1}`}>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-2xl">{stat.icon}</span>
+          <div key={stat.label} className={`card-hover bg-white rounded-2xl p-4 sm:p-6 border border-surface-200 stat-pattern animate-fade-in stagger-${i + 1}`}>
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <span className="text-xl sm:text-2xl">{stat.icon}</span>
               <div className={`w-8 h-1.5 rounded-full bg-gradient-to-r ${stat.color}`} />
             </div>
-            <p className="text-3xl font-bold text-surface-900 tracking-tight">{stat.value}</p>
-            <p className="text-sm text-surface-400 mt-1 font-medium">{stat.label}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-surface-900 tracking-tight">{stat.value}</p>
+            <p className="text-xs sm:text-sm text-surface-400 mt-1 font-medium">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 bg-white rounded-2xl p-6 border border-surface-200 animate-fade-in stagger-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-6 border border-surface-200 animate-fade-in stagger-3">
           <h3 className="font-semibold text-surface-800 mb-4">Andamento Click — Ultimi 14 giorni</h3>
           {stats.recentClicks.length > 0 ? (
             <BarChart data={[...stats.recentClicks].reverse()} />
@@ -64,7 +64,7 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 animate-fade-in stagger-5">
+      <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 animate-fade-in stagger-5">
         <Link href="/create" className="card-hover flex items-center gap-4 p-5 bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl text-white shadow-lg shadow-brand-200">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
